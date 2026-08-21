@@ -1,0 +1,81 @@
+use inventory_pos_db;
+
+-- 1. Products Table
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    category VARCHAR(50),
+    price DECIMAL(10, 2) NOT NULL,
+    stock_quantity INT NOT NULL DEFAULT 0
+);
+
+-- 2. Customers Table
+CREATE TABLE customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15)
+);
+
+-- 3. Sales Transactions Table
+CREATE TABLE sales (
+    sale_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
+    product_id INT,
+    quantity_sold INT NOT NULL,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    sale_date date,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+show tables;
+
+select * from products;
+select * from customers;
+select * from sales;
+
+select product_name,stock_quantity
+from products
+where product_name='Bluetooth Speaker'
+
+select category,sum(stock_quantity),sum(price)
+from products
+group by category;
+
+select category,sum(stock_quantity),avg(price)
+from products
+group by category
+having avg(price)>2000;
+
+select product_name,stock_quantity "max and min stock quantity"
+from products
+where stock_quantity in((select max(stock_quantity) from products),
+               ( select min(stock_quantity) from products));
+
+select category,stock_quantity "max stock and min stock"
+from products
+where stock_quantity in((select min(stock_quantity)
+                       from products),(select max(stock_quantity) from products));
+
+
+select p.product_id, p.category,p.stock_quantity,s.quantity_sold,s.total_amount,s.product_id
+from products p inner join sales s
+on p.product_id=s.product_id;
+
+select c.customer_name,c.phone,s.product_id,s.quantity_sold,s.total_amount,s.sale_date
+from customers c right join sales s
+on c.customer_id=s.customer_id;
+
+select p.product_name, p.category,sum(s.total_amount),sum(s.quantity_sold)
+from products p inner join sales s
+on p.product_id=s.product_id
+group by p.product_name, p.category;
+
+SELECT 
+    DATE_FORMAT(s.sale_date, '%Y-%m') AS sale_month,
+    COUNT(DISTINCT s.customer_id) AS unique_buyers,
+    SUM(s.quantity_sold) AS total_units_sold,
+    SUM(s.total_amount) AS monthly_revenue
+FROM sales s
+GROUP BY DATE_FORMAT(s.sale_date, '%Y-%m')
+ORDER BY sale_month DESC;
