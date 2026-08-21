@@ -1,3 +1,6 @@
+<img width="1438" height="806" alt="Sales   Inventory Performance Dashboard" src="https://github.com/user-attachments/assets/1e236f83-0b75-45b1-a59b-8173db4257f3" />
+
+
 # Sales & Inventory Performance Analytics Dashboard
 
 An end-to-end data analytics project featuring custom Python data pipelines, MySQL database management, and interactive Power BI dashboard reporting.
